@@ -84,12 +84,14 @@ def data_cyclic(base_cyclic):
     Example of a cyclic data acquisition
     """
 
-    data = {}
-
     feedback = base_cyclic.RefreshFeedback()
-    current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_timestamp = datetime.now().strftime("%H:%M:%S")
 
+    #assim ta ruim
+    data = {}
     data[current_timestamp] = [f'{feedback}']
+
+    data = f'{current_timestamp}' + ': ' + f'{feedback}' + "\n"
 
     return data
 
