@@ -1,13 +1,18 @@
 #! /usr/bin/env python3
+import os
 import json
 import random
 import utilities
 import threading
+from pathlib import Path
 from datetime import datetime
 # from emergency_stop import EmergencyStop
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
+
+
+FILES_FOLDER = "json_data_files"
 
 
 def get_actions_dict(base):
@@ -37,14 +42,22 @@ def movement_sequence(base):
     sequence = Base_pb2.Sequence()
     sequence.name = "Example sequence"
 
-    sequences = {'Sequence 1': ['Time4_safe_remedio1', 'Timçe4_abrir_garra_remedio', 'Time4_remedio1',
-                                'Time4_fechar_garra_remedio', 'Home'],
+    sequences = {'Sequence 1': ['Time4_safe_remedio1', 'Time4_abrir_garra_remedio', 'Time4_remedio1',
+                                'Time4_fechar_garra_remedio', 'Time4_safe_remedio1', 'Time4_soltar_remedio',
+                                'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio',
+                                'Home'],
                  'Sequence 2': ['Time4_safe_remedio2', 'Time4_abrir_garra_remedio', 'Time4_remedio2',
-                                'Time4_fechar_garra_remedio', 'Home'],
+                                'Time4_fechar_garra_remedio', 'Time4_safe_remedio2', 'Time4_soltar_remedio',
+                                'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio',
+                                'Home'],
                  'Sequence 3': ['Time4_safe_remedio3', 'Time4_abrir_garra_remedio', 'Time4_remedio3',
-                                'Time4_fechar_garra_remedio', 'Home'],
+                                'Time4_fechar_garra_remedio', 'Time4_safe_remedio3', 'Time4_soltar_remedio',
+                                'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio',
+                                'Home'],
                  'Sequence 4': ['Time4_safe_remedio4', 'Time4_abrir_garra_remedio', 'Time4_remedio4',
-                                'Time4_fechar_garra_remedio', 'Home']
+                                'Time4_fechar_garra_remedio', 'Time4_safe_remedio4', 'Time4_soltar_remedio',
+                                'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio',
+                                'Home']
                  }
 
     random_mode = False
@@ -79,7 +92,7 @@ def movement_sequence(base):
     return finished
 
 
-def data_cyclic(base_cyclic):
+def data_cyclic(base_cyclic, data):
     """
     Example of a cyclic data acquisition
     """
@@ -87,11 +100,7 @@ def data_cyclic(base_cyclic):
     feedback = base_cyclic.RefreshFeedback()
     current_timestamp = datetime.now().strftime("%H:%M:%S")
 
-    #assim ta ruim
-    data = {}
     data[current_timestamp] = [f'{feedback}']
-
-    data = f'{current_timestamp}' + ': ' + f'{feedback}' + "\n"
 
     return data
 
@@ -100,15 +109,27 @@ def save_data(data):
     """
     Save data in a json file
     """
+    with open(f"{FILES_FOLDER}/{file_name()}", 'w') as output:
+        json.dump(data, output)
 
-    current_date = datetime.now().strftime("%Y-%m-%d")
 
-    if not f'{current_date}.json':
-        with open(f'{current_date}.json', 'w') as output:
-            json.dump(data, output)
+def create_file(name):
+    if not os.path.isdir(FILES_FOLDER):
+        os.mkdir(FILES_FOLDER)
+
+    if os.path.isfile(f"{FILES_FOLDER}/{name}"):
+        # open json file
+        with open(f"{FILES_FOLDER}/{name}", 'r') as json_file:
+            data = json.load(json_file)
     else:
-        with open(f'{current_date}.json', 'a') as output:
-            json.dump(data, output)
+        data = {}
+
+    return data
+
+
+def file_name(date=datetime.now()):
+    current_date = date.strftime("%Y-%m-%d")
+    return f'{current_date}.json'
 
 
 def main():
@@ -119,7 +140,9 @@ def main():
     # Parse arguments
     args = utilities.parseConnectionArguments()
 
-    number_of_cycles = 5
+    number_of_cycles = 30
+
+    data = create_file(file_name())
 
     # Create connection to the device and get the router
     with utilities.DeviceConnection.createTcpConnection(args) as router:
@@ -132,7 +155,7 @@ def main():
         success = True
         for repetitions in range(number_of_cycles):
             success &= movement_sequence(base)
-            save_data(data_cyclic(base_cyclic))
+            save_data(data_cyclic(base_cyclic, data))
 
         return 0 if success else 1
 
