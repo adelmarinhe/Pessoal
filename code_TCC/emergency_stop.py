@@ -2,13 +2,17 @@ from pynput import keyboard
 
 
 class EmergencyStop:
-    def __init__(self, base):
+    def __init__(self, base, data, return_function, save_function, base_cyclic):
         """
         This function is used to initialize the base object of the robot and simplify the object manipulate.
         Arguments:
             base: base object of the robot
         """
         self.base = base
+        self.data = data
+        self.return_function = return_function
+        self.save_function = save_function
+        self.base_cyclic = base_cyclic  # TODO: Use partial functions to remove this attr
 
     def on_press(self, key):
         """
@@ -16,6 +20,7 @@ class EmergencyStop:
         """
         if str(key) == 'Key.space':
             self.base.ApplyEmergencyStop()
+            self.save_function(self.return_function(self.base_cyclic, self.data))
 
     def emergency_stop(self):
         """

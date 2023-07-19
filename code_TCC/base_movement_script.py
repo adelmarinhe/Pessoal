@@ -4,15 +4,20 @@ import json
 import random
 import utilities
 import threading
-from pathlib import Path
 from datetime import datetime
-# from emergency_stop import EmergencyStop
+from emergency_stop import EmergencyStop
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
 
 FILES_FOLDER = "json_data_files"
+
+sequences = {}
+for i in range(1, 4):
+    sequences[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', 'Time4_abrir_garra_remedio', f'Time4_remedio{i}',
+                                 'Time4_fechar_garra_remedio', f'Time4_safe_remedio{i}', 'Time4_soltar_remedio',
+                                 'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
 
 
 def get_actions_dict(base):
@@ -30,7 +35,40 @@ def get_actions_dict(base):
     return action_dict
 
 
-def movement_sequence(base):
+def execute_command(base, execution_action):
+    """
+    Check for messages from the robot
+    """
+
+    e = threading.Event()
+    notification_handle = base.OnNotificationSequenceInfoTopic(
+        utilities.check_for_sequence_end_or_abort(e),
+        Base_pb2.NotificationOptions()
+    )
+
+    if isinstance(execution_action, Base_pb2.Sequence):
+        print("Creating sequence on device and executing it")
+        handle = base.CreateSequence(execution_action)
+        base.PlaySequence(handle)
+    elif isinstance(execution_action, Base_pb2.Action):
+        print("Creating movement action on device and executing it")
+        handle = base.CreateAction(execution_action)
+        base.ExecuteAction(handle)
+    else:
+        print("Type non supported")
+
+    print("Waiting execution")
+    finished = e.wait(utilities.TIMEOUT_DURATION)
+    base.Unsubscribe(notification_handle)
+
+    if finished:
+        print("Movement completed")
+    else:
+        print("Timeout on action notification wait")
+    return finished
+
+
+def movement_sequence(base, seq):
     """
     Example of a sequence of movements
     """
@@ -42,54 +80,43 @@ def movement_sequence(base):
     sequence = Base_pb2.Sequence()
     sequence.name = "Example sequence"
 
-    sequences = {'Sequence 1': ['Time4_safe_remedio1', 'Time4_abrir_garra_remedio', 'Time4_remedio1',
-                                'Time4_fechar_garra_remedio', 'Time4_safe_remedio1', 'Time4_soltar_remedio',
-                                'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio',
-                                'Home'],
-                 'Sequence 2': ['Time4_safe_remedio2', 'Time4_abrir_garra_remedio', 'Time4_remedio2',
-                                'Time4_fechar_garra_remedio', 'Time4_safe_remedio2', 'Time4_soltar_remedio',
-                                'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio',
-                                'Home'],
-                 'Sequence 3': ['Time4_safe_remedio3', 'Time4_abrir_garra_remedio', 'Time4_remedio3',
-                                'Time4_fechar_garra_remedio', 'Time4_safe_remedio3', 'Time4_soltar_remedio',
-                                'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio',
-                                'Home'],
-                 'Sequence 4': ['Time4_safe_remedio4', 'Time4_abrir_garra_remedio', 'Time4_remedio4',
-                                'Time4_fechar_garra_remedio', 'Time4_safe_remedio4', 'Time4_soltar_remedio',
-                                'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio',
-                                'Home']
-                 }
-
     random_mode = False
 
     if random_mode:
-        executed_sequence = random.choice(list(sequences.keys()))
+        executed_sequence = random.choice(list(seq.keys()))
     else:
         executed_sequence = 'Sequence 1'
 
     print("Appending Actions to Sequence")
-    for i, task_name in enumerate(sequences[executed_sequence]):
+    for i, task_name in enumerate(seq[executed_sequence]):
         task = sequence.tasks.add()
         task.group_identifier = i
         task.action.CopyFrom(action_dict[task_name])
 
-    e = threading.Event()
-    notification_handle = base.OnNotificationSequenceInfoTopic(
-        utilities.check_for_sequence_end_or_abort(e),
-        Base_pb2.NotificationOptions()
-    )
+    execute_command(base, sequence)
 
-    print("Creating sequence on device and executing it")
-    handle_sequence = base.CreateSequence(sequence)
-    base.PlaySequence(handle_sequence)
+    return True if execute_command(base, sequence) else False
 
-    print("Waiting for movement to finish ...")
-    finished = e.wait(utilities.TIMEOUT_DURATION)
-    base.Unsubscribe(notification_handle)
 
-    if not finished:
-        print("Timeout on action notification wait")
-    return finished
+def movement_action(base, action_name):
+    """
+    Example of a movement action
+    """
+
+    print("Creating Action for Movement")
+    action_dict = get_actions_dict(base)
+
+    print("Creating Movement Action")
+    movement_action = Base_pb2.Action()
+    movement_action.name = action_name
+    movement_action.application_data = "Movement Action"
+
+    print("Appending Actions to Movement Action")
+    # task = movement_action.tasks.add()
+    # task.group_identifier = 0
+    # task.action.CopyFrom(action_dict[action_name])
+
+    execute_command(base, movement_action)
 
 
 def data_cyclic(base_cyclic, data):
@@ -105,15 +132,28 @@ def data_cyclic(base_cyclic, data):
     return data
 
 
+def clear_faults(base):
+    """
+    Clear the faults of the robot
+    """
+
+    base.ClearFaults()
+
+
 def save_data(data):
     """
     Save data in a json file
     """
+
     with open(f"{FILES_FOLDER}/{file_name()}", 'w') as output:
         json.dump(data, output)
 
 
 def create_file(name):
+    """
+    Create a json file with the data
+    """
+
     if not os.path.isdir(FILES_FOLDER):
         os.mkdir(FILES_FOLDER)
 
@@ -128,6 +168,10 @@ def create_file(name):
 
 
 def file_name(date=datetime.now()):
+    """
+    Create a file name with the current date
+    """
+
     current_date = date.strftime("%Y-%m-%d")
     return f'{current_date}.json'
 
@@ -140,7 +184,7 @@ def main():
     # Parse arguments
     args = utilities.parseConnectionArguments()
 
-    number_of_cycles = 30
+    number_of_cycles = 2
 
     data = create_file(file_name())
 
@@ -149,13 +193,25 @@ def main():
         # Create required services
         base = BaseClient(router)
         base_cyclic = BaseCyclicClient(router)
-
-        # EmergencyStop(router).emergency_stop()
-
         success = True
+
+        EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop()
+
+        feedback = base_cyclic.RefreshFeedback()
+        print(feedback)
+        # robot executes movement action
+        # for repetitions in range(number_of_cycles):
+        #     for movement in sequences['Sequence 1']:
+        #         clear_faults(base)
+        #         success &= movement_action(base, movement)
+        #         save_data(data_cyclic(base_cyclic, data))
+
+        # robot executes movement sequence
         for repetitions in range(number_of_cycles):
-            success &= movement_sequence(base)
             save_data(data_cyclic(base_cyclic, data))
+            clear_faults(base)
+            success &= movement_sequence(base, sequences)
+            # save_data(data_cyclic(base_cyclic, data))
 
         return 0 if success else 1
 
