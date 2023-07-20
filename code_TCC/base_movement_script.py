@@ -123,9 +123,13 @@ def data_cyclic(base_cyclic, data):
     """
     Example of a cyclic data acquisition
     """
-
-    feedback = base_cyclic.RefreshFeedback()
     current_timestamp = datetime.now().strftime("%H:%M:%S")
+    feedback = base_cyclic.RefreshFeedback()
+    
+    # TODO: ver se é possível salvar o feedback como dicionário
+    # json.loads() to convert json string into dictionary
+    # testar: data[current_timestamp] = json.loads(f'{feedback}')
+    # se não funcionar fazer retorno do feedback item a item
 
     data[current_timestamp] = f'{feedback}'
 
@@ -221,6 +225,10 @@ def main():
             save_data(data_cyclic(base_cyclic, data))
             check_faults(base, feedback)
             success &= movement_sequence(base, sequences)
+            # checar se isso funciona
+            # ver robot provider
+            # if EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop():
+            #     success &= False
 
         return 0 if success else 1
 
