@@ -127,9 +127,18 @@ def data_cyclic(base_cyclic, data):
     feedback = base_cyclic.RefreshFeedback()
     current_timestamp = datetime.now().strftime("%H:%M:%S")
 
-    data[current_timestamp] = [f'{feedback}']
+    data[current_timestamp] = f'{feedback}'
 
     return data
+
+
+def check_faults(base, feedback):
+    """
+    Check if there are any faults
+    """
+
+    if "fault" in f'{feedback}':
+        clear_faults(base)
 
 
 def clear_faults(base):
@@ -198,20 +207,20 @@ def main():
         EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop()
 
         feedback = base_cyclic.RefreshFeedback()
+
         print(feedback)
         # robot executes movement action
         # for repetitions in range(number_of_cycles):
         #     for movement in sequences['Sequence 1']:
-        #         clear_faults(base)
+        #         check_faults(base, feedback)
         #         success &= movement_action(base, movement)
         #         save_data(data_cyclic(base_cyclic, data))
 
         # robot executes movement sequence
         for repetitions in range(number_of_cycles):
             save_data(data_cyclic(base_cyclic, data))
-            clear_faults(base)
+            check_faults(base, feedback)
             success &= movement_sequence(base, sequences)
-            # save_data(data_cyclic(base_cyclic, data))
 
         return 0 if success else 1
 
