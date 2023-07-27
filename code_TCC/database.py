@@ -23,6 +23,10 @@ CSV_FILES_FOLDER = "csv_data_files"
 
 
 def find_string(start_string: str, end_string: str, data: dict, instance, addition_term=0):
+    """
+    Method to find string in json
+    """
+
     start_index = data[instance].find(start_string) + len(start_string) + addition_term
     end_index = data[instance].find(end_string, start_index)
     string_data = data[instance][start_index:end_index]
@@ -96,7 +100,8 @@ def parse_actuators(data: dict):
 def parse_interconnect(data: dict):
     """
     Method to return a list of dictionaries of the interconnect data
-   """
+    """
+
     interconnect_dict = {}
     interconnect_attributes_return = {}
 
@@ -126,7 +131,7 @@ def parse_interconnect(data: dict):
 def parse_gripper(data: dict):
     """
     Method to return a list of dictionaries of the interconnect data
-   """
+    """
     gripper_dict = {}
     gripper_attributes_return = {}
 
