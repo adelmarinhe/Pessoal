@@ -32,6 +32,7 @@ def get_actions_dict(base):
         action_type.action_type = at
         action_list = base.ReadAllActions(action_type)
         action_dict.update({action.name: action for action in action_list.action_list})
+
     return action_dict
 
 
@@ -50,10 +51,10 @@ def execute_command(base, execution_action):
         print("Creating sequence on device and executing it")
         handle = base.CreateSequence(execution_action)
         base.PlaySequence(handle)
-    elif isinstance(execution_action, Base_pb2.Action):
+    elif isinstance(execution_action, Base_pb2.RequestedActionType):
         print("Creating movement action on device and executing it")
         handle = base.CreateAction(execution_action)
-        base.ExecuteAction(handle)
+        base.ExecuteActionFromReference(handle)
     else:
         print("Type non supported")
 
@@ -73,12 +74,11 @@ def movement_sequence(base, seq):
     Example of a sequence of movements
     """
 
-    print("Creating Action for Sequence")
     action_dict = get_actions_dict(base)
 
     print("Creating Sequence")
     sequence = Base_pb2.Sequence()
-    sequence.name = "Example sequence"
+    sequence.name = "Test sequence"
 
     random_mode = False
 
@@ -103,20 +103,31 @@ def movement_action(base, action_name):
     Example of a movement action
     """
 
-    print("Creating Action for Movement")
+    base_servo_mode = Base_pb2.ServoingModeInformation()
+    base_servo_mode.servoing_mode = Base_pb2.SINGLE_LEVEL_SERVOING
+    base.SetServoingMode(base_servo_mode)
+
     action_dict = get_actions_dict(base)
+    action_handle = None
 
-    print("Creating Movement Action")
-    movement_action = Base_pb2.Action()
-    movement_action.name = action_name
-    movement_action.application_data = "Movement Action"
+    if action_name in action_dict:
+        action_handle = action_dict[action_name].handle
 
-    print("Appending Actions to Movement Action")
-    # task = movement_action.tasks.add()
-    # task.group_identifier = 0
-    # task.action.CopyFrom(action_dict[action_name])
+    if action_handle is None:
+        print("Can't reach safe position. Exiting")
+        return False
 
-    execute_command(base, movement_action)
+    execute_command(base, action_handle)
+
+
+def obtain_feedback(base_cyclic):
+    """
+    Obtain feedback
+    """
+
+    feedback = base_cyclic.RefreshFeedback()
+
+    return feedback
 
 
 def data_cyclic(base_cyclic, data):
@@ -124,24 +135,23 @@ def data_cyclic(base_cyclic, data):
     Example of a cyclic data acquisition
     """
     current_timestamp = datetime.now().strftime("%H:%M:%S")
-    feedback = base_cyclic.RefreshFeedback()
-    
+
     # TODO: ver se é possível salvar o feedback como dicionário
     # json.loads() to convert json string into dictionary
     # testar: data[current_timestamp] = json.loads(f'{feedback}')
     # se não funcionar fazer retorno do feedback item a item
 
-    data[current_timestamp] = f'{feedback}'
+    data[current_timestamp] = f'{obtain_feedback(base_cyclic)}'
 
     return data
 
 
-def check_faults(base, feedback):
+def check_faults(base, base_cyclic):
     """
     Check if there are any faults
     """
 
-    if "fault" in f'{feedback}':
+    if "fault" in f'{obtain_feedback(base_cyclic)}':
         clear_faults(base)
 
 
@@ -186,6 +196,7 @@ def file_name(date=datetime.now()):
     """
 
     current_date = date.strftime("%Y-%m-%d")
+
     return f'{current_date}.json'
 
 
@@ -208,22 +219,17 @@ def main():
         base_cyclic = BaseCyclicClient(router)
         success = True
 
-        EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop()
-
-        feedback = base_cyclic.RefreshFeedback()
-
-        print(feedback)
         # robot executes movement action
         # for repetitions in range(number_of_cycles):
         #     for movement in sequences['Sequence 1']:
-        #         check_faults(base, feedback)
+        #         check_faults(base, base_cyclic, obtain_feedback(base_cyclic))
         #         success &= movement_action(base, movement)
         #         save_data(data_cyclic(base_cyclic, data))
 
         # robot executes movement sequence
         for repetitions in range(number_of_cycles):
             save_data(data_cyclic(base_cyclic, data))
-            check_faults(base, feedback)
+            check_faults(base, base_cyclic, obtain_feedback(base_cyclic))
             success &= movement_sequence(base, sequences)
             # checar se isso funciona
             # ver robot provider

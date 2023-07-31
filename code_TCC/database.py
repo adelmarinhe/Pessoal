@@ -132,6 +132,7 @@ def parse_gripper(data: dict):
     """
     Method to return a list of dictionaries of the interconnect data
     """
+
     gripper_dict = {}
     gripper_attributes_return = {}
 
