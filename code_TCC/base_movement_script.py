@@ -53,6 +53,10 @@ def get_actions_handle_dict(base):
 
 
 def wait_execution(base):
+    """
+    Wait for the current action to finish execution
+    """
+
     e = threading.Event()
     notification_handle = base.OnNotificationSequenceInfoTopic(
         utilities.check_for_sequence_end_or_abort(e),
@@ -67,6 +71,7 @@ def wait_execution(base):
         print("Movement completed")
     else:
         print("Timeout on action notification wait")
+
     return finished
 
 
@@ -240,7 +245,8 @@ def main():
         # for repetitions in range(number_of_cycles):
         #     save_data(data_cyclic(base_cyclic, data))
         #     check_faults(base, base_cyclic)
-        #     success &= movement_sequence(base, sequences)
+        #     movement_sequence(base, sequences)
+        #     success &= wait_execution(base)
         #     # if EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop():
         #     #     success &= False
 
