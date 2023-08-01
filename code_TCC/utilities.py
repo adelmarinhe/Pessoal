@@ -7,7 +7,7 @@ from kortex_api.SessionManager import SessionManager
 from kortex_api.autogen.messages import Session_pb2, Base_pb2, BaseCyclic_pb2
 
 
-TIMEOUT_DURATION = 20
+TIMEOUT_DURATION = 1.8
 
 
 def parseConnectionArguments(parser = argparse.ArgumentParser()):

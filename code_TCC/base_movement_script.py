@@ -36,27 +36,28 @@ def get_actions_dict(base):
     return action_dict
 
 
-def execute_command(base, execution_action):
+def get_actions_handle_dict(base):
     """
-    Check for messages from the robot
+    Get the list of available actions from the Kinova database
     """
 
+    action_handle_dict = {}
+    action_types = [Base_pb2.REACH_JOINT_ANGLES, Base_pb2.END_EFFECTOR_TYPE_UNSPECIFIED]
+    for at in action_types:
+        action_type = Base_pb2.RequestedActionType()
+        action_type.action_type = at
+        action_list = base.ReadAllActions(action_type)
+        action_handle_dict.update({action.name: action.handle for action in action_list.action_list})
+
+    return action_handle_dict
+
+
+def wait_execution(base):
     e = threading.Event()
     notification_handle = base.OnNotificationSequenceInfoTopic(
         utilities.check_for_sequence_end_or_abort(e),
         Base_pb2.NotificationOptions()
     )
-
-    if isinstance(execution_action, Base_pb2.Sequence):
-        print("Creating sequence on device and executing it")
-        handle = base.CreateSequence(execution_action)
-        base.PlaySequence(handle)
-    elif isinstance(execution_action, Base_pb2.RequestedActionType):
-        print("Creating movement action on device and executing it")
-        handle = base.CreateAction(execution_action)
-        base.ExecuteActionFromReference(handle)
-    else:
-        print("Type non supported")
 
     print("Waiting execution")
     finished = e.wait(utilities.TIMEOUT_DURATION)
@@ -67,6 +68,22 @@ def execute_command(base, execution_action):
     else:
         print("Timeout on action notification wait")
     return finished
+
+
+def execute_command(base, execution_action):
+    """
+    Check for messages from the robot
+    """
+
+    if isinstance(execution_action, Base_pb2.Sequence):
+        print("Creating sequence on device and executing it")
+        handle = base.CreateSequence(execution_action)
+        base.PlaySequence(handle)
+    elif isinstance(execution_action, Base_pb2.ActionHandle):
+        print("Creating movement action on device and executing it")
+        base.ExecuteActionFromReference(execution_action)
+    else:
+        print("Type non supported")
 
 
 def movement_sequence(base, seq):
@@ -93,8 +110,6 @@ def movement_sequence(base, seq):
         task.group_identifier = i
         task.action.CopyFrom(action_dict[task_name])
 
-    execute_command(base, sequence)
-
     return True if execute_command(base, sequence) else False
 
 
@@ -107,17 +122,17 @@ def movement_action(base, action_name):
     base_servo_mode.servoing_mode = Base_pb2.SINGLE_LEVEL_SERVOING
     base.SetServoingMode(base_servo_mode)
 
-    action_dict = get_actions_dict(base)
+    action_handle_dict = get_actions_handle_dict(base)
     action_handle = None
 
-    if action_name in action_dict:
-        action_handle = action_dict[action_name].handle
+    if action_name in action_handle_dict:
+        action_handle = action_handle_dict[action_name]
 
     if action_handle is None:
         print("Can't reach safe position. Exiting")
         return False
 
-    execute_command(base, action_handle)
+    return True if execute_command(base, action_handle) else False
 
 
 def obtain_feedback(base_cyclic):
@@ -130,18 +145,13 @@ def obtain_feedback(base_cyclic):
     return feedback
 
 
-def data_cyclic(base_cyclic, data):
+def data_cyclic(base_cyclic, data, movement: None):
     """
     Example of a cyclic data acquisition
     """
     current_timestamp = datetime.now().strftime("%H:%M:%S")
 
-    # TODO: ver se é possível salvar o feedback como dicionário
-    # json.loads() to convert json string into dictionary
-    # testar: data[current_timestamp] = json.loads(f'{feedback}')
-    # se não funcionar fazer retorno do feedback item a item
-
-    data[current_timestamp] = f'{obtain_feedback(base_cyclic)}'
+    data[current_timestamp] = [f'{movement}', f'{obtain_feedback(base_cyclic)}']
 
     return data
 
@@ -205,10 +215,9 @@ def main():
     Example of a pick and place scenario with the Kortex API
     """
 
-    # Parse arguments
     args = utilities.parseConnectionArguments()
 
-    number_of_cycles = 2
+    number_of_cycles = 1
 
     data = create_file(file_name())
 
@@ -220,21 +229,20 @@ def main():
         success = True
 
         # robot executes movement action
-        # for repetitions in range(number_of_cycles):
-        #     for movement in sequences['Sequence 1']:
-        #         check_faults(base, base_cyclic, obtain_feedback(base_cyclic))
-        #         success &= movement_action(base, movement)
-        #         save_data(data_cyclic(base_cyclic, data))
+        for repetitions in range(number_of_cycles):
+            for movement in sequences['Sequence 1']:
+                check_faults(base, base_cyclic)
+                movement_action(base, movement)
+                success &= wait_execution(base)
+                save_data(data_cyclic(base_cyclic, data, movement))
 
         # robot executes movement sequence
-        for repetitions in range(number_of_cycles):
-            save_data(data_cyclic(base_cyclic, data))
-            check_faults(base, base_cyclic, obtain_feedback(base_cyclic))
-            success &= movement_sequence(base, sequences)
-            # checar se isso funciona
-            # ver robot provider
-            # if EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop():
-            #     success &= False
+        # for repetitions in range(number_of_cycles):
+        #     save_data(data_cyclic(base_cyclic, data))
+        #     check_faults(base, base_cyclic)
+        #     success &= movement_sequence(base, sequences)
+        #     # if EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop():
+        #     #     success &= False
 
         return 0 if success else 1
 
