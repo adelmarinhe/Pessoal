@@ -150,13 +150,16 @@ def obtain_feedback(base_cyclic):
     return feedback
 
 
-def data_cyclic(base_cyclic, data, movement: None):
+def data_cyclic(base_cyclic, data):
     """
     Example of a cyclic data acquisition
     """
+
+    # def data_cyclic(base_cyclic, data, movement: None):
     current_timestamp = datetime.now().strftime("%H:%M:%S")
 
-    data[current_timestamp] = [f'{movement}', f'{obtain_feedback(base_cyclic)}']
+    # data[current_timestamp] = [f'{movement}', f'{obtain_feedback(base_cyclic)}']
+    data[current_timestamp] = f'{obtain_feedback(base_cyclic)}'
 
     return data
 
@@ -222,7 +225,7 @@ def main():
 
     args = utilities.parseConnectionArguments()
 
-    number_of_cycles = 1
+    number_of_cycles = 90
 
     data = create_file(file_name())
 
@@ -234,21 +237,21 @@ def main():
         success = True
 
         # robot executes movement action
-        for repetitions in range(number_of_cycles):
-            for movement in sequences['Sequence 1']:
-                check_faults(base, base_cyclic)
-                movement_action(base, movement)
-                success &= wait_execution(base)
-                save_data(data_cyclic(base_cyclic, data, movement))
+        # for repetitions in range(number_of_cycles):
+        #     for movement in sequences['Sequence 1']:
+        #         check_faults(base, base_cyclic)
+        #         movement_action(base, movement)
+        #         success &= wait_execution(base)
+        #         save_data(data_cyclic(base_cyclic, data, movement))
 
         # robot executes movement sequence
-        # for repetitions in range(number_of_cycles):
-        #     save_data(data_cyclic(base_cyclic, data))
-        #     check_faults(base, base_cyclic)
-        #     movement_sequence(base, sequences)
-        #     success &= wait_execution(base)
-        #     # if EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop():
-        #     #     success &= False
+        for repetitions in range(number_of_cycles):
+            save_data(data_cyclic(base_cyclic, data))
+            check_faults(base, base_cyclic)
+            movement_sequence(base, sequences)
+            success &= wait_execution(base)
+            # if EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop():
+            #     success &= False
 
         return 0 if success else 1
 
