@@ -20,22 +20,6 @@ for i in range(1, 4):
                                  'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
 
 
-def get_actions_dict(base):
-    """
-    Get the list of available actions from the Kinova database
-    """
-
-    action_dict = {}
-    action_types = [Base_pb2.REACH_JOINT_ANGLES, Base_pb2.END_EFFECTOR_TYPE_UNSPECIFIED]
-    for at in action_types:
-        action_type = Base_pb2.RequestedActionType()
-        action_type.action_type = at
-        action_list = base.ReadAllActions(action_type)
-        action_dict.update({action.name: action for action in action_list.action_list})
-
-    return action_dict
-
-
 def get_actions_handle_dict(base):
     """
     Get the list of available actions from the Kinova database
@@ -52,19 +36,13 @@ def get_actions_handle_dict(base):
     return action_handle_dict
 
 
-def wait_execution(base):
+def wait_execution(base, event, notification_handle):
     """
     Wait for the current action to finish execution
     """
 
-    e = threading.Event()
-    notification_handle = base.OnNotificationSequenceInfoTopic(
-        utilities.check_for_sequence_end_or_abort(e),
-        Base_pb2.NotificationOptions()
-    )
-
     print("Waiting execution")
-    finished = e.wait(utilities.TIMEOUT_DURATION)
+    finished = event.wait(utilities.TIMEOUT_DURATION)
     base.Unsubscribe(notification_handle)
 
     if finished:
@@ -80,42 +58,11 @@ def execute_command(base, execution_action):
     Check for messages from the robot
     """
 
-    if isinstance(execution_action, Base_pb2.Sequence):
-        print("Creating sequence on device and executing it")
-        handle = base.CreateSequence(execution_action)
-        base.PlaySequence(handle)
-    elif isinstance(execution_action, Base_pb2.ActionHandle):
+    if isinstance(execution_action, Base_pb2.ActionHandle):
         print("Creating movement action on device and executing it")
         base.ExecuteActionFromReference(execution_action)
     else:
         print("Type non supported")
-
-
-def movement_sequence(base, seq):
-    """
-    Example of a sequence of movements
-    """
-
-    action_dict = get_actions_dict(base)
-
-    print("Creating Sequence")
-    sequence = Base_pb2.Sequence()
-    sequence.name = "Test sequence"
-
-    random_mode = False
-
-    if random_mode:
-        executed_sequence = random.choice(list(seq.keys()))
-    else:
-        executed_sequence = 'Sequence 1'
-
-    print("Appending Actions to Sequence")
-    for i, task_name in enumerate(seq[executed_sequence]):
-        task = sequence.tasks.add()
-        task.group_identifier = i
-        task.action.CopyFrom(action_dict[task_name])
-
-    return True if execute_command(base, sequence) else False
 
 
 def movement_action(base, action_name):
@@ -137,7 +84,15 @@ def movement_action(base, action_name):
         print("Can't reach safe position. Exiting")
         return False
 
-    return True if execute_command(base, action_handle) else False
+    thread_event = threading.Event()
+    notification_handle = base.OnNotificationSequenceInfoTopic(
+        utilities.check_for_sequence_end_or_abort(e),
+        Base_pb2.NotificationOptions()
+    )
+
+    execute_command(base, action_handle)
+
+    return True if wait_execution(base, thread_event, notification_handle) else False
 
 
 def obtain_feedback(base_cyclic):
@@ -150,16 +105,14 @@ def obtain_feedback(base_cyclic):
     return feedback
 
 
-def data_cyclic(base_cyclic, data):
+def data_cyclic(base_cyclic, data, movement: None):
     """
     Example of a cyclic data acquisition
     """
 
-    # def data_cyclic(base_cyclic, data, movement: None):
     current_timestamp = datetime.now().strftime("%H:%M:%S")
 
-    # data[current_timestamp] = [f'{movement}', f'{obtain_feedback(base_cyclic)}']
-    data[current_timestamp] = f'{obtain_feedback(base_cyclic)}'
+    data[current_timestamp] = [f'{movement}', f'{obtain_feedback(base_cyclic)}']
 
     return data
 
@@ -236,22 +189,11 @@ def main():
         base_cyclic = BaseCyclicClient(router)
         success = True
 
-        # robot executes movement action
-        # for repetitions in range(number_of_cycles):
-        #     for movement in sequences['Sequence 1']:
-        #         check_faults(base, base_cyclic)
-        #         movement_action(base, movement)
-        #         success &= wait_execution(base)
-        #         save_data(data_cyclic(base_cyclic, data, movement))
-
-        # robot executes movement sequence
         for repetitions in range(number_of_cycles):
             save_data(data_cyclic(base_cyclic, data))
             check_faults(base, base_cyclic)
             movement_sequence(base, sequences)
             success &= wait_execution(base)
-            # if EmergencyStop(base, data, data_cyclic, save_data, base_cyclic).emergency_stop():
-            #     success &= False
 
         return 0 if success else 1
 
