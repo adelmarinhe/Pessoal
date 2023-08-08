@@ -9,6 +9,14 @@ from kortex_api.RouterClient import RouterClient, RouterClientSendOptions
 
 TIMEOUT_DURATION = 20
 
+def execution_sequences():
+    sequences = {}
+    for i in range(1, 4):
+        sequences[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', 'Time4_abrir_garra_remedio', f'Time4_remedio{i}',
+                                     'Time4_fechar_garra_remedio', f'Time4_safe_remedio{i}', 'Time4_soltar_remedio',
+                                     'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
+
+    return sequences
 
 def get_actions_dict(base):
     action_dict = {}

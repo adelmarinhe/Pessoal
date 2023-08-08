@@ -20,6 +20,51 @@ for i in range(1, 4):
                                  'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
 
 
+def get_actions_handle_dict(base):
+    """
+    Get the list of available actions from the Kinova database
+    """
+
+    action_handle_dict = {}
+    action_types = [Base_pb2.REACH_JOINT_ANGLES, Base_pb2.END_EFFECTOR_TYPE_UNSPECIFIED]
+    for at in action_types:
+        action_type = Base_pb2.RequestedActionType()
+        action_type.action_type = at
+        action_list = base.ReadAllActions(action_type)
+        action_handle_dict.update({action.name: action.handle for action in action_list.action_list})
+
+    return action_handle_dict
+
+
+def wait_execution(base, event, notification_handle):
+    """
+    Wait for the current action to finish execution
+    """
+
+    print("Waiting execution")
+    finished = event.wait(utilities.TIMEOUT_DURATION)
+    base.Unsubscribe(notification_handle)
+
+    if finished:
+        print("Movement completed")
+    else:
+        print("Timeout on action notification wait")
+
+    return finished
+
+
+def execute_command(base, execution_action):
+    """
+    Check for messages from the robot
+    """
+
+    if isinstance(execution_action, Base_pb2.ActionHandle):
+        print("Creating movement action on device and executing it")
+        base.ExecuteActionFromReference(execution_action)
+    else:
+        print("Type non supported")
+
+
 def movement_action(base, action_name):
     """
     Example of a movement action
@@ -29,7 +74,7 @@ def movement_action(base, action_name):
     base_servo_mode.servoing_mode = Base_pb2.SINGLE_LEVEL_SERVOING
     base.SetServoingMode(base_servo_mode)
 
-    action_handle_dict = utilities.get_actions_handle_dict(base)
+    action_handle_dict = get_actions_handle_dict(base)
     action_handle = None
 
     if action_name in action_handle_dict:
@@ -38,6 +83,14 @@ def movement_action(base, action_name):
     if action_handle is None:
         print("Can't reach safe position. Exiting")
         return False
+
+    thread_event = threading.Event()
+    notification_handle = base.OnNotificationSequenceInfoTopic(
+        utilities.check_for_sequence_end_or_abort(thread_event),
+        Base_pb2.NotificationOptions()
+    )
+
+    execute_command(base, action_handle)
 
     return utilities.execute_action(action_handle, base)
 

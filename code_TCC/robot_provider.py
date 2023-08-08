@@ -34,54 +34,17 @@ class RobotProvider:
     def attach_update_function(self, update_function: Callable):
         self.__update_function = update_function
 
-    def emergency_stop(self):
-        pass
-
-    def safety_restart(self):
-        pass
-
-    def flush_robot_error(self):
-        pass
-
     def run_commands(self):
         _ = self.__thread_pool.submit(self.__run_commands)
 
     def __run_commands(self):
-        if not RobotContext.is_connected():
-            print('robot connection not started')
-            RobotContext.set_execution_status(ExecutionStatus.IDLE)
-            return
-
-        RobotContext.set_execution_status(ExecutionStatus.RUNNING)
-
-        while True:
-            action_command = RobotContext.get_reset_action_command()
-            if action_command is not None:
-                if action_command == ActionCommand.PAUSE:
-                    print("PAUSED")
-                    RobotContext.set_execution_status(ExecutionStatus.PAUSED)
-                    break
-                elif action_command == ActionCommand.STOP:
-                    print("STOPPED")
-                    RobotContext.set_execution_status(ExecutionStatus.STOPPED)
-                    self.__kinova_command(KinovaPositions()['Zero'])
-                    RobotContext.clean_commands()
-                    break
-                else:
-                    print('action not supported on execution loop', action_command)
-
             command = RobotContext.dequeue_command()
+
+            self.__kinova_command(KinovaPositions()[command])
 
             if command is None:
                 RobotContext.set_execution_status(ExecutionStatus.IDLE)
                 break
-
-            RobotContext.set_execution_status(ExecutionStatus.RUNNING)
-
-            if self.__robot_type == RobotType.KINOVA:
-                self.__kinova_command(command)
-            else:
-                print("Unexpected robot type")
 
             if not RobotContext.check_for_commands() and RobotContext.get_execution_status() == ExecutionStatus.RUNNING:
                 sleep(10)
@@ -90,7 +53,9 @@ class RobotProvider:
         sys.exit()
 
     def main(self):
-        self.__kinova_command(KinovaPositions()[position])
+        sequences = utilities.execution_sequences()
+        for position in sequences['Sequence 1']:
+            self.__kinova_command(KinovaPositions()[position])
 
     def __kinova_command(self, cmd):
         utilities.execute_action(cmd, self.kinova_base)
