@@ -5,19 +5,19 @@ import random
 import utilities
 import threading
 from datetime import datetime
+from google.protobuf import json_format
 from emergency_stop import EmergencyStop
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
-
 
 FILES_FOLDER = "json_data_files"
 
 sequences = {}
 for i in range(1, 4):
     sequences[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', 'Time4_abrir_garra_remedio', f'Time4_remedio{i}',
-                                 'Time4_fechar_garra_remedio', f'Time4_safe_remedio{i}', 'Time4_soltar_remedio',
-                                 'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
+                                  'Time4_fechar_garra_remedio', f'Time4_safe_remedio{i}', 'Time4_soltar_remedio',
+                                  'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
 
 
 def get_actions_handle_dict(base):
@@ -53,16 +53,16 @@ def wait_execution(base, event, notification_handle):
     return finished
 
 
-def execute_command(base, execution_action):
-    """
-    Check for messages from the robot
-    """
-
-    if isinstance(execution_action, Base_pb2.ActionHandle):
-        print("Creating movement action on device and executing it")
-        base.ExecuteActionFromReference(execution_action)
-    else:
-        print("Type non supported")
+# def execute_command(base, execution_action):
+#     """
+#     Check for messages from the robot
+#     """
+#
+#     if isinstance(execution_action, Base_pb2.ActionHandle):
+#         print("Creating movement action on device and executing it")
+#         base.ExecuteActionFromReference(execution_action)
+#     else:
+#         print("Type non supported")
 
 
 def movement_action(base, action_name):
@@ -86,11 +86,11 @@ def movement_action(base, action_name):
 
     thread_event = threading.Event()
     notification_handle = base.OnNotificationSequenceInfoTopic(
-        utilities.check_for_sequence_end_or_abort(thread_event),
+        utilities.check_for_end_or_abort(thread_event),
         Base_pb2.NotificationOptions()
     )
 
-    execute_command(base, action_handle)
+    # execute_command(base, action_handle)
 
     return utilities.execute_action(action_handle, base)
 
@@ -115,6 +115,18 @@ def data_cyclic(base_cyclic, data, movement: None):
     data[current_timestamp] = [f'{movement}', f'{obtain_feedback(base_cyclic)}']
 
     return data
+
+
+def datacyclic_json(base_cyclic, feedback_json, movement):
+
+    current_timestamp = datetime.now().strftime("%H:%M:%S")
+
+    feedback_json[current_timestamp] = [f'{movement}', json_format.MessageToJson(obtain_feedback(base_cyclic))]
+
+    return feedback_json
+
+
+
 
 
 def check_faults(base, base_cyclic):
@@ -161,6 +173,14 @@ def create_file(name):
     return data
 
 
+def get_time(time=datetime.now()):
+    """
+    Get the current time
+    """
+
+    return time.strftime("%H:%M:%S")
+
+
 def file_name(date=datetime.now()):
     """
     Create a file name with the current date
@@ -178,7 +198,9 @@ def main():
 
     args = utilities.parse_connection_arguments()
 
-    number_of_cycles = 90
+    # number_of_cycles = 100
+
+    time_goal = datetime(2023, 8, 18, 9, 10)
 
     data = create_file(file_name())
 
@@ -189,11 +211,15 @@ def main():
         base_cyclic = BaseCyclicClient(router)
         success = True
 
-        for repetitions in range(number_of_cycles):
+        # for repetitions in range(number_of_cycles):
+        while datetime.now() < time_goal:
             for movement in sequences['Sequence 1']:
-                save_data(data_cyclic(base_cyclic, data, movement))
+                # save_data(data_cyclic(base_cyclic, data, movement))
+                save_data(datacyclic_json(base_cyclic, data, movement))
                 check_faults(base, base_cyclic)
-                success &= movement_action(movement, base)
+                success &= movement_action(base, movement)
+
+        print(datetime.now())
 
         return 0 if success else 1
 
