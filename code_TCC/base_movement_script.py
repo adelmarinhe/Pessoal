@@ -15,9 +15,11 @@ FILES_FOLDER = "json_data_files"
 
 sequences = {}
 for i in range(1, 4):
-    sequences[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', 'Time4_abrir_garra_remedio', f'Time4_remedio{i}',
-                                  'Time4_fechar_garra_remedio', f'Time4_safe_remedio{i}', 'Time4_soltar_remedio',
-                                  'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
+    # sequences[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', 'Time4_abrir_garra_remedio', f'Time4_remedio{i}',
+    #                               'Time4_fechar_garra_remedio', f'Time4_safe_remedio{i}', 'Time4_soltar_remedio',
+    #                               'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
+    sequences[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', f'Time4_remedio{i}', f'Time4_safe_remedio{i}',
+                                  'Time4_soltar_remedio', 'Time4_caixinha', 'Home']
 
 
 def get_actions_handle_dict(base):
@@ -200,7 +202,7 @@ def main():
 
     # number_of_cycles = 100
 
-    time_goal = datetime(2023, 8, 18, 9, 10)
+    time_goal = datetime(2023, 8, 28, 17, 00)
 
     data = create_file(file_name())
 

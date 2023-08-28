@@ -23,28 +23,28 @@ for file in os.listdir(JSON_FILES_FOLDER):
             actuator_data = parsed_data['actuators']
             gripper_data = parsed_data['interconnect']
 
-            base_data_list = []
-            # actuator_data_dict = {}
-            # actuator_data_dict_2 = []
-            gripper_data_dict = [file, instance, movement]
+            # base_data_list = []
+            actuator_data_dict = {}
+            actuator_data_dict_2 = []
+            # gripper_data_dict = [file, instance, movement]
 
-            base_data_2 = []
+            # base_data_2 = []
 
-            for attribute in list(base_data.keys()):
-                base_data_2.append(base_data[attribute] if attribute in list(base_data.keys()) else " ")
-                base_data_list.append(base_data_2)
-                base_data_2.clear()
+            # for attribute in list(base_data.keys()):
+            #     base_data_2.append(base_data[attribute] if attribute in list(base_data.keys()) else " ")
+            #     base_data_list.append(base_data_2)
+            #     base_data_2.clear()
 
-            # for actuator in range(len(actuator_data)):
-            #     for parameter in actuator_data[actuator]:
-            #         actuator_data_dict_2.append(actuator_data[actuator][parameter])
-            #     actuator_data_dict[actuator] = actuator_data_dict_2
+            for actuator in range(len(actuator_data)):
+                for parameter in actuator_data[actuator]:
+                    actuator_data_dict_2.append(actuator_data[actuator][parameter])
+                actuator_data_dict[actuator] = actuator_data_dict_2
 
-            for attribute in gripper_data:
-                gripper_data_dict.append(gripper_data[attribute] if attribute in list(gripper_data.keys()) else " ")
+            # for attribute in gripper_data:
+            #     gripper_data_dict.append(gripper_data[attribute] if attribute in list(gripper_data.keys()) else " ")
 
-            for data_class in data_classes:
-                with open(data_class, 'w', newline='') as csvfile:
-                    csv_writer = csv.writer(csvfile)
-                    for row in base_data_list:
-                        csv_writer.writerow(row)
+            # for data_class in actuators:
+            #     with open(data_class, 'w', newline='') as csvfile:
+            #         csv_writer = csv.writer(csvfile)
+            #         for row in base_data_list:
+            #             csv_writer.writerow(row)
