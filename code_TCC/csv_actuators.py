@@ -11,6 +11,9 @@ actuator_attributes = ['commandId', 'statusFlags', 'jitterComm', 'position', 've
                        'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore', 'faultBankA',
                        'faultBankB', 'warningBankB', 'warningBankB']
 
+actuator_attributes_interest = ['jitterComm', 'position', 'velocity', 'torque',
+                                'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore']
+
 actuator_dict = {}
 
 for file in os.listdir(JSON_FILES_FOLDER):
