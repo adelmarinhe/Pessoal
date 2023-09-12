@@ -1,0 +1,29 @@
+syntax = "proto2";
+
+enum MedicamentoType{
+    NONE = 0;
+    AMPOLA = 1;
+    PACOTE = 2;
+}
+
+enum RobotState{
+    RUNNING = 0;
+    IDLE = 1;
+    WAIT = 2;
+    GRASPING = 3;
+    MOVING = 4;
+}
+
+message RobotAPIStatus{
+    required RobotState robot = 1; 
+}
+
+message Medicamento{
+    required string name = 1;
+    required int32 quantidade = 2;
+    required MedicamentoType tipo = 3;
+}
+
+message Ticket{
+    repeated Medicamento medicamentos = 1;
+}
