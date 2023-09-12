@@ -202,7 +202,7 @@ def main():
 
     # number_of_cycles = 100
 
-    time_goal = datetime(2023, 8, 28, 17, 00)
+    time_goal = datetime(2023, 9, 1, 16, 45)
 
     data = create_file(file_name())
 
