@@ -1,24 +1,31 @@
-import json
 import os
 import csv
+import json
 
-JSON_FILES_FOLDER = "json_data_files"
-CSV_FILES_FOLDER = "csv_data_files"
+JSON_FILES_FOLDER_PATH = "C:/Users/jams/Documents/Pessoal/code_TCC/json_data_files"
+CSV_FILES_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/csv_data_files"
 
-actuators = ['actuator_1', 'actuator_2', 'actuator_3', 'actuator_4', 'actuator_5', 'actuator_6']
+actuators = ['actuator 1', 'actuator 2', 'actuator 3', 'actuator 4', 'actuator 5', 'actuator 6']
 
 actuator_attributes = ['commandId', 'statusFlags', 'jitterComm', 'position', 'velocity', 'torque',
                        'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore', 'faultBankA',
                        'faultBankB', 'warningBankB', 'warningBankB']
+
+actuator_attributes_csv = ['Time', 'Movement', 'commandId', 'statusFlags', 'jitterComm', 'position', 'velocity',
+                           'torque',
+                           'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore', 'faultBankA', 'faultBankB',
+                           'warningBankB', 'warningBankB']
 
 actuator_attributes_interest = ['jitterComm', 'position', 'velocity', 'torque',
                                 'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore']
 
 actuator_dict = {}
 
-for file in os.listdir(JSON_FILES_FOLDER):
-    with open(f'{JSON_FILES_FOLDER}/{file}', 'r') as json_file:
+for file in os.listdir(JSON_FILES_FOLDER_PATH):
+    with open(f'{JSON_FILES_FOLDER_PATH}/{file}', 'r') as json_file:
         json_data = json.load(json_file)
+
+        date = file.split(".")[0]
 
         instances = list(json_data.keys())
 
@@ -40,9 +47,14 @@ for file in os.listdir(JSON_FILES_FOLDER):
                     actuator_dict[actuator][count].append(actuator_data[i][attribute]) \
                         if attribute in feedback_attributes else actuator_dict[actuator][count].append(" ")
 
-    print(actuator_dict)
+    if not os.path.isdir(f'{CSV_FILES_FOLDER}/{date}'):
+        os.mkdir(f'{CSV_FILES_FOLDER}/{date}')
+
     for actuator in actuators:
-        with open(f'{file}_{actuator}', 'w', newline='') as csvfile:
+        with open(f'{CSV_FILES_FOLDER}/{date}/{actuator}', 'w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
+            csv_writer.writerow(actuator_attributes_csv)
             for row in actuator_dict[actuator].values():
                 csv_writer.writerow(row)
+
+    actuator_dict.clear()
