@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Intents &amp; Lifecycle</string>
+    <string name="btnExplicitoText">Explicito - lifecycle</string>
+    <string name="btnLifecycleViewModelText">Lifecycle ViewModel</string>
+    <string name="btnLiveDataViewModelText">LiveData + ViewModel</string>
+    <string name="btnImplicitoWebTxt">Implicito Link web</string>
+    <string name="btnImplicitoMapTxt">Implicito mapa</string>
+    <string name="btnImplicitoCameraTxt">Implicito Camera</string>
+    <string name="hintAssunto">Digite um assunto</string>
+    <string name="hintMsg">Digite a mensagem</string>
+    <string name="btnExplicitoTxt">Explicito TxtActivity</string>
+    <string name="btnImplicitoTxt">Implicito SMS</string>
+    <string name="hintCampoTexto">Digite algo aqui</string>
+    <string name="btnLifecycleTxt">Faz alguma coisa</string>
+    <string name="identificadoresInicial">Activity ID: %d</string>
+    <string name="textoDigitadoInicial">Nao digitou nada...</string>
+    <string name="logLifecycleInicial">...</string>
+    <string name="subjectLabel">Assunto</string>
+    <string name="textoLabel">Texto</string>
+    <string name="keyAssunto">assunto</string>
+    <string name="keyMensagem">164239</string>
+</resources>
