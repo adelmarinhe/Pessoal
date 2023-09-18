@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">UI Widgets</string>
+    <string name="log_default">Mensagem padrão exibida no topo</string>
+    <string name="icon_caption">Legenda do ícone</string>
+    <string name="button_caption">Texto do botão</string>
+    <string name="txtbutton_caption">Clique aqui</string>
+    <string name="switch_caption">Me ative ou me desative</string>
+    <string name="checkbox_caption">Me marque ou me desmarque</string>
+    <string name="radiobutton1_caption">Sport</string>
+    <string name="radiobutton2_caption">Náutico</string>
+    <string name="radiobutton3_caption">Santa Cruz</string>
+    <string name="icon_clicked">Clicou no ícone</string>
+    <string name="imgbutton_clicked">Clicou no botão que tem uma imagem</string>
+    <string name="txtbutton_clicked">Botão de texto clicado</string>
+    <string name="switch_checked">Ativou o switch</string>
+    <string name="switch_unchecked">Desativou o switch</string>
+    <string name="checkbox_checked">Ativou o checkbox</string>
+    <string name="checkbox_unchecked">Desativou o checkbox</string>
+    <string name="radiobtn1_checked">Escolheu a opção certa</string>
+    <string name="radiobtn2_checked">Cuidado pra não cair...</string>
+    <string name="radiobtn3_checked">O que é o santinha mesmo?</string>
+    <string name="seekbar_changed">Valor da seekbar mudou para %d.</string>
+    <string name="otherButton_caption">Texto do outro botão</string>
+    <string name="log_clicked">Clicou no próprio log!</string>
+    <string name="radiogroup_clicked">Clicou no radio group!</string>
+</resources>

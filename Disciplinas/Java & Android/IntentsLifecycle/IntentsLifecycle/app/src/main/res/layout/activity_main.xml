@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <Button
+        android:id="@+id/btnIntentExplicito"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Intent Explícito - LifecycleActivity" />
+
+    <Button
+        android:id="@+id/btnIntentImplicitoWeb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Intent Implícito - Web" />
+
+    <Button
+        android:id="@+id/btnIntentImplicitoMapa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Intent Implícito - Mapa" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mensagem"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/mensagem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Digite alguma mensagem aqui"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/btnExplicitoMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Intent Explicito - Mensagem" />
+
+    <Button
+        android:id="@+id/btnImplicitoMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Intent Implicito - Mensagem" />
+
+</LinearLayout>
