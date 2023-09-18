@@ -13,14 +13,18 @@ from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
 FILES_FOLDER = "json_data_files"
 
-sequences = {}
+sequence = {}
 for i in range(1, 4):
-    # sequences[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', 'Time4_abrir_garra_remedio', f'Time4_remedio{i}',
+    # sequence[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', 'Time4_abrir_garra_remedio', f'Time4_remedio{i}',
     #                               'Time4_fechar_garra_remedio', f'Time4_safe_remedio{i}', 'Time4_soltar_remedio',
     #                               'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
-    sequences[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', f'Time4_remedio{i}', f'Time4_safe_remedio{i}',
-                                  'Time4_soltar_remedio', 'Time4_caixinha', 'Home']
 
+    # sequence[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', f'Time4_remedio{i}', f'Time4_safe_remedio{i}',
+    #                               'Time4_soltar_remedio', 'Time4_caixinha', 'Home']
+    pass
+
+sequence = [f'movement_2_safe_grasp', f'movement_3_grasp', f'movement_2_safe_grasp', f'movement_4_safe_release',
+            f'movement_5_release', f'movement_4_safe_release', 'Home']
 
 def get_actions_handle_dict(base):
     """
@@ -44,7 +48,7 @@ def wait_execution(base, event, notification_handle):
     """
 
     print("Waiting execution")
-    finished = event.wait(utilities.TIMEOUT_DURATION)
+    finished = event.wait(kinova_utilities.TIMEOUT_DURATION)
     base.Unsubscribe(notification_handle)
 
     if finished:
@@ -88,13 +92,13 @@ def movement_action(base, action_name):
 
     thread_event = threading.Event()
     notification_handle = base.OnNotificationSequenceInfoTopic(
-        utilities.check_for_end_or_abort(thread_event),
+        kinova_utilities.check_for_end_or_abort(thread_event),
         Base_pb2.NotificationOptions()
     )
 
     # execute_command(base, action_handle)
 
-    return utilities.execute_action(action_handle, base)
+    return kinova_utilities.execute_action(action_handle, base)
 
 
 def obtain_feedback(base_cyclic):
@@ -120,15 +124,11 @@ def data_cyclic(base_cyclic, data, movement: None):
 
 
 def datacyclic_json(base_cyclic, feedback_json, movement):
-
     current_timestamp = datetime.now().strftime("%H:%M:%S")
 
     feedback_json[current_timestamp] = [f'{movement}', json_format.MessageToJson(obtain_feedback(base_cyclic))]
 
     return feedback_json
-
-
-
 
 
 def check_faults(base, base_cyclic):
@@ -198,16 +198,16 @@ def main():
     Example of a pick and place scenario with the Kortex API
     """
 
-    args = utilities.parse_connection_arguments()
+    args = kinova_utilities.parse_connection_arguments()
 
     # number_of_cycles = 100
 
-    time_goal = datetime(2023, 9, 1, 16, 45)
+    time_goal = datetime(2023, 9, 18, 17, 0)
 
     data = create_file(file_name())
 
     # Create connection to the device and get the router
-    with utilities.DeviceConnection.create_tcp_connection(args) as router:
+    with kinova_utilities.DeviceConnection.create_tcp_connection(args) as router:
         # Create required services
         base = BaseClient(router)
         base_cyclic = BaseCyclicClient(router)
@@ -215,7 +215,7 @@ def main():
 
         # for repetitions in range(number_of_cycles):
         while datetime.now() < time_goal:
-            for movement in sequences['Sequence 1']:
+            for movement in sequence:
                 # save_data(data_cyclic(base_cyclic, data, movement))
                 save_data(datacyclic_json(base_cyclic, data, movement))
                 check_faults(base, base_cyclic)
