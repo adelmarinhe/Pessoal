@@ -5,7 +5,7 @@ import json
 JSON_FILES_FOLDER_PATH = "C:/Users/jams/Documents/Pessoal/code_TCC/json_data_files"
 CSV_FILES_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/csv_data_files"
 
-actuators = ['actuator 1', 'actuator 2', 'actuator 3', 'actuator 4', 'actuator 5', 'actuator 6']
+actuators = ['actuator_1', 'actuator_2', 'actuator_3', 'actuator_4', 'actuator_5', 'actuator_6']
 
 actuator_attributes = ['commandId', 'statusFlags', 'jitterComm', 'position', 'velocity', 'torque',
                        'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore', 'faultBankA',
@@ -49,12 +49,13 @@ for file in os.listdir(JSON_FILES_FOLDER_PATH):
 
     if not os.path.isdir(f'{CSV_FILES_FOLDER}/{date}'):
         os.mkdir(f'{CSV_FILES_FOLDER}/{date}')
-
-    for actuator in actuators:
-        with open(f'{CSV_FILES_FOLDER}/{date}/{actuator}', 'w', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(actuator_attributes_csv)
-            for row in actuator_dict[actuator].values():
-                csv_writer.writerow(row)
+        for actuator in actuators:
+            with open(f'{CSV_FILES_FOLDER}/{date}/{actuator}', 'w', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
+                csv_writer.writerow(actuator_attributes_csv)
+                for row in actuator_dict[actuator].values():
+                    csv_writer.writerow(row)
+    else:
+        pass
 
     actuator_dict.clear()
