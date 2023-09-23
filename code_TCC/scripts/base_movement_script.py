@@ -1,7 +1,5 @@
-#! /usr/bin/env python3
 import os
 import json
-import random
 import kinova_utilities
 import threading
 from datetime import datetime
@@ -13,18 +11,9 @@ from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
 FILES_FOLDER = "json_data_files"
 
-sequence = {}
-for i in range(1, 4):
-    # sequence[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', 'Time4_abrir_garra_remedio', f'Time4_remedio{i}',
-    #                               'Time4_fechar_garra_remedio', f'Time4_safe_remedio{i}', 'Time4_soltar_remedio',
-    #                               'Time4_caixinha', 'Time4_abrir_garra_remedio', 'Time4_fechar_garra_remedio', 'Home']
-
-    # sequence[f'Sequence {i}'] = [f'Time4_safe_remedio{i}', f'Time4_remedio{i}', f'Time4_safe_remedio{i}',
-    #                               'Time4_soltar_remedio', 'Time4_caixinha', 'Home']
-    pass
-
 sequence = [f'movement_2_safe_grasp', f'movement_3_grasp', f'movement_2_safe_grasp', f'movement_4_safe_release',
             f'movement_5_release', f'movement_4_safe_release', 'Home']
+
 
 def get_actions_handle_dict(base):
     """
@@ -57,18 +46,6 @@ def wait_execution(base, event, notification_handle):
         print("Timeout on action notification wait")
 
     return finished
-
-
-# def execute_command(base, execution_action):
-#     """
-#     Check for messages from the robot
-#     """
-#
-#     if isinstance(execution_action, Base_pb2.ActionHandle):
-#         print("Creating movement action on device and executing it")
-#         base.ExecuteActionFromReference(execution_action)
-#     else:
-#         print("Type non supported")
 
 
 def movement_action(base, action_name):
@@ -200,9 +177,7 @@ def main():
 
     args = kinova_utilities.parse_connection_arguments()
 
-    # number_of_cycles = 100
-
-    time_goal = datetime(2023, 9, 18, 17, 0)
+    time_goal = datetime(2023, 9, 23, 17, 0)
 
     data = create_file(file_name())
 

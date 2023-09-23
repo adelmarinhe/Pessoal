@@ -8,7 +8,7 @@ JSON_FILES_FOLDER_PATH = "C:/Users/jams/Documents/Pessoal/code_TCC/json_data_fil
 CSV_FILES_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/csv_data_files"
 PLOTS_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/plots"
 
-movements = ['Time4_safe_remedio1', 'Time4_remedio1', 'Time4_soltar_remedio', 'Time4_caixinha', 'Home']
+movements = ['movement_2_safe_grasp', 'movement_3_grasp', 'movement_4_safe_release', 'movement_5_release', 'Home']
 actuator_attributes_interest = ['position', 'velocity', 'torque', 'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore']
 
 for directory in os.listdir(CSV_FILES_FOLDER):
