@@ -3,37 +3,13 @@ import csv
 import pandas as pd
 import numpy as np
 
-expected_joint_angles = {'Home': [0, 344, 75, 0, 300, 0],
-                         'movement_2_safe_grasp': [22.690292358398438,
-                                                   347.787841796875,
-                                                   91.1580810546875,
-                                                   345.40728759765625,
-                                                   300.799072265625,
-                                                   352.2476806640625],
-                         'movement_3_grasp': [36.26722717285156,
-                                              336.98724365234375,
-                                              85.48641967773438,
-                                              350.34735107421875,
-                                              314.64813232421875,
-                                              350.21044921875],
-                         'movement_4_safe_release': [7.6923065185546875,
-                                                     293.3585205078125,
-                                                     36.652435302734375,
-                                                     270.0581359863281,
-                                                     283.05670166015625,
-                                                     97.69122314453125],
-                         'movement_5_release': [7.6994171142578125,
-                                                288.1332702636719,
-                                                38.8013916015625,
-                                                270.02423095703125,
-                                                290.4320068359375,
-                                                97.71112060546875]}
+from code_TCC.scripts import utils
 
-JSON_FILES_FOLDER_PATH = "C:/Users/jams/Documents/Pessoal/code_TCC/json_data_files"
-CSV_FILES_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/csv_data_files"
-PLOTS_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/plots"
+csv_path = utils.CSV_FILES_FOLDER
 
-movements = ['movement_2_safe_grasp', 'movement_3_grasp', 'movement_4_safe_release', 'movement_5_release', 'Home']
+movements = utils.movements
+sequence = utils.sequence
+expected_joint_angles = utils.expected_joint_angles
 
 indexes = ['Date', 'Movement', 'Actuator', 'Expected Value', 'Mean', 'Median', 'Standard Deviation']
 
@@ -65,9 +41,9 @@ parameter = 'position'
 means = []
 csv_means = []
 
-for directory in os.listdir(CSV_FILES_FOLDER):
-    for file in os.listdir(f'{CSV_FILES_FOLDER}/{directory}'):
-        with open(f'{CSV_FILES_FOLDER}/{directory}/{file}', 'r') as csv_file:
+for directory in os.listdir(csv_path):
+    for file in os.listdir(f'{csv_path}/{directory}'):
+        with open(f'{csv_path}/{directory}/{file}', 'r') as csv_file:
             dataframe = pd.read_csv(csv_file)
 
             date = f'{directory}'

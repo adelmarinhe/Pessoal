@@ -4,16 +4,17 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
 
-JSON_FILES_FOLDER_PATH = "C:/Users/jams/Documents/Pessoal/code_TCC/json_data_files"
-CSV_FILES_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/csv_data_files"
-PLOTS_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/plots"
+from code_TCC.scripts import utils
 
-movements = ['movement_2_safe_grasp', 'movement_3_grasp', 'movement_4_safe_release', 'movement_5_release', 'Home']
+csv_path = utils.CSV_FILES_FOLDER
+plots_path = utils.PLOTS_FOLDER
+movements = utils.movements
+
 actuator_attributes_interest = ['position', 'velocity', 'torque', 'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore']
 
-for directory in os.listdir(CSV_FILES_FOLDER):
-    for file in os.listdir(f'{CSV_FILES_FOLDER}/{directory}'):
-        with open(f'{CSV_FILES_FOLDER}/{directory}/{file}', 'r') as csv_file:
+for directory in os.listdir(csv_path):
+    for file in os.listdir(f'{csv_path}/{directory}'):
+        with open(f'{csv_path}/{directory}/{file}', 'r') as csv_file:
             dataframe = pd.read_csv(csv_file)
 
             date = f'{directory}'
@@ -39,10 +40,10 @@ for directory in os.listdir(CSV_FILES_FOLDER):
 
                 ax.legend()
 
-                if not os.path.isdir(f'{PLOTS_FOLDER}/{date}'):
-                    os.mkdir(f'{PLOTS_FOLDER}/{date}')
+                if not os.path.isdir(f'{plots_path}/{date}'):
+                    os.mkdir(f'{plots_path}/{date}')
 
-                if not os.path.isdir(f'{PLOTS_FOLDER}/{date}/{actuator}'):
-                    os.mkdir(f'{PLOTS_FOLDER}/{date}/{actuator}')
+                if not os.path.isdir(f'{plots_path}/{date}/{actuator}'):
+                    os.mkdir(f'{plots_path}/{date}/{actuator}')
 
-                plt.savefig(f'{PLOTS_FOLDER}/{date}/{actuator}/{date}_{actuator}_{movement}.png')
+                plt.savefig(f'{plots_path}/{date}/{actuator}/{date}_{actuator}_{movement}.png')

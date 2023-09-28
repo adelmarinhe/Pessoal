@@ -155,7 +155,33 @@ Funções e responsabilidades da Camada de Transporte:
 
 A Camada de Transporte é crucial para a comunicação confiável e eficaz na rede, garantindo que os dados sejam transmitidos de forma ordenada, sem erros e com a velocidade adequada. Os protocolos nesta camada, como TCP e UDP, desempenham um papel fundamental na entrega de dados e na garantia de uma comunicação eficiente na internet e em outras redes.
 
-**A Camada de Sessão** é responsável por estabelecer, manter e encerrar sessões de comunicação entre aplicativos em diferentes dispositivos.
+UDP (User Datagram Protocol) e TCP (Transmission Control Protocol) são dois protocolos fundamentais da camada de transporte em redes de computadores. Ambos são usados para enviar dados através de uma rede, mas possuem características distintas que os tornam adequados para diferentes tipos de aplicações.
+
+Aqui estão as principais diferenças entre UDP e TCP:
+
+1. **Confiabilidade e entrega de dados:**
+   - **TCP:** É um protocolo orientado à conexão, o que significa que estabelece uma conexão antes de iniciar a transmissão de dados. É altamente confiável, garante a entrega ordenada dos dados, a detecção e retransmissão de pacotes perdidos e a correção de erros.
+   - **UDP:** É um protocolo sem conexão, o que significa que os dados são enviados sem a necessidade de estabelecer uma conexão. Não há garantia de entrega ou detecção de perda de pacotes, e a ordem dos pacotes não é necessariamente mantida.
+
+2. **Controle de fluxo e congestão:**
+   - **TCP:** Implementa mecanismos de controle de fluxo e controle de congestionamento para garantir que a rede não fique sobrecarregada. Ajusta a taxa de transmissão para evitar congestionamentos.
+   - **UDP:** Não possui mecanismos de controle de fluxo ou controle de congestão. Os aplicativos que utilizam UDP precisam gerenciar esses aspectos por conta própria, se necessário.
+
+3. **Overhead:**
+   - **TCP:** Possui um maior overhead devido à necessidade de estabelecer e manter conexões, garantir a entrega e a ordem dos dados, e implementar mecanismos de controle.
+   - **UDP:** Tem um overhead menor, pois não tem a complexidade associada à garantia de entrega e controle de fluxo.
+
+4. **Aplicações típicas:**
+   - **TCP:** É amplamente usado em aplicações que requerem uma entrega precisa de dados e são sensíveis ao tempo, como transferências de arquivos, e-mails, navegação na web, videoconferências e jogos online.
+   - **UDP:** É adequado para aplicações em que uma pequena perda de pacotes é tolerável e a latência é crítica, como streaming de vídeo, jogos online (onde a latência é mais crítica do que a precisão dos dados) e aplicações de VoIP.
+
+5. **Exemplo de uso:**
+   - **TCP:** Uma conversa por chamada de voz, onde a qualidade e a ordem das palavras são importantes.
+   - **UDP:** Um serviço de streaming de vídeo ao vivo, onde a perda de alguns quadros não é crítica, mas a latência baixa é vital.
+
+Em resumo, a principal diferença entre UDP e TCP está na confiabilidade, controle de fluxo, controle de congestão e overhead associados a cada protocolo. A escolha entre os dois depende das necessidades da aplicação e dos requisitos de entrega e latência dos dados.
+
+**A Camada de Sessão** é responsável por estabelecer, manter e encerrar sessões de comunicação entre aplicativos em diferentes dispositivos.h
 
 Funções e responsabilidades da Camada de Sessão:
 

@@ -4,15 +4,16 @@ import kinova_utilities
 import threading
 from datetime import datetime
 from google.protobuf import json_format
+
+from code_TCC.scripts import utils
 from emergency_stop import EmergencyStop
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
-FILES_FOLDER = "json_data_files"
+json_files_path = utils.JSON_FILES_FOLDER_PATH
 
-sequence = [f'movement_2_safe_grasp', f'movement_3_grasp', f'movement_2_safe_grasp', f'movement_4_safe_release',
-            f'movement_5_release', f'movement_4_safe_release', 'Home']
+sequence = utils.sequence
 
 
 def get_actions_handle_dict(base):
@@ -73,8 +74,6 @@ def movement_action(base, action_name):
         Base_pb2.NotificationOptions()
     )
 
-    # execute_command(base, action_handle)
-
     return kinova_utilities.execute_action(action_handle, base)
 
 
@@ -100,7 +99,7 @@ def data_cyclic(base_cyclic, data, movement: None):
     return data
 
 
-def datacyclic_json(base_cyclic, feedback_json, movement):
+def data_cyclic_json(base_cyclic, feedback_json, movement):
     current_timestamp = datetime.now().strftime("%H:%M:%S")
 
     feedback_json[current_timestamp] = [f'{movement}', json_format.MessageToJson(obtain_feedback(base_cyclic))]
@@ -130,7 +129,7 @@ def save_data(data):
     Save data in a json file
     """
 
-    with open(f"{FILES_FOLDER}/{file_name()}", 'w') as output:
+    with open(f"code_TCC/{json_files_path}/{file_name()}", 'w') as output:
         json.dump(data, output)
 
 
@@ -139,12 +138,12 @@ def create_file(name):
     Create a json file with the data
     """
 
-    if not os.path.isdir(FILES_FOLDER):
-        os.mkdir(FILES_FOLDER)
+    if not os.path.isdir(json_files_path):
+        os.mkdir(json_files_path)
 
-    if os.path.isfile(f"{FILES_FOLDER}/{name}"):
+    if os.path.isfile(f"{json_files_path}/{name}"):
         # open json file
-        with open(f"{FILES_FOLDER}/{name}", 'r') as json_file:
+        with open(f"{json_files_path}/{name}", 'r') as json_file:
             data = json.load(json_file)
     else:
         data = {}
@@ -188,11 +187,9 @@ def main():
         base_cyclic = BaseCyclicClient(router)
         success = True
 
-        # for repetitions in range(number_of_cycles):
         while datetime.now() < time_goal:
             for movement in sequence:
-                # save_data(data_cyclic(base_cyclic, data, movement))
-                save_data(datacyclic_json(base_cyclic, data, movement))
+                save_data(data_cyclic_json(base_cyclic, data, movement))
                 check_faults(base, base_cyclic)
                 success &= movement_action(base, movement)
 
