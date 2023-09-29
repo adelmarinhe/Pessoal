@@ -64,5 +64,5 @@ concrete MedicalPrescriptionEng of MedicalPrescription = open Prelude in {
 
     -- Time Period
     Daily = {s = "every day"} ;
-    ForAWeek = {s = "for a week"}} ;
+    ForAWeek = {s = "for a week"} ;
 }
