@@ -1,40 +1,68 @@
+--gr -number=10 | l
+
 concrete MedicalPrescriptionEng of MedicalPrescription = open Prelude in {
+  param
+  Number = Sg | Pl ;
+
   lincat
-    Sentence, Verb, Medication, Amount, Frequency, Quantity, Dosage = SS ;
+    Sentence, Verb, Medication, Frequency, Peposition, TimePeriod, Dosage = SS ;
+    Quantity = {s : Number => Str} ;
+    Amount = {s : Str ; n : Number} ;
+
+    oper
+    det : Number -> Str -> {s : Str ; n : Number} =
+    \n,d -> {
+        s = d ;
+        n = n
+    } ;
+
+    noun : Str -> Str -> {s : Number => Str} =
+    \car,cars -> {s = table { Sg => car ; Pl => cars } } ;
+
+    regNoun : Str -> {s : Number => Str} =
+    \car -> noun car (car + "s") ;
 
   lin
-    Have verb dosage freq = {s = verb.s ++ dosage.s ++ freq.s} ;
-    MedAmount amount med = {s = amount.s ++ Quantity.s ++ med.s} ;
+    Phrase verb amount quantity prep med freq timeperiod = { s = verb.s ++ amount.s ++ quantity.s ! amount.n ++ prep.s ++ med.s ++ freq.s ++ timeperiod.s } ;
 
     -- Verbs
     Take = {s = "Take"} ;
-    Use = {s = "Use"} ;
     Ingest = {s = "Ingest"} ;
+    -- Inject = {s = "Inject"} ;
 
-    -- Dosage
-    NumberOfPills = {s = "doses of"} ;
+    -- Peposition
+    Of = ss "of" ;
+
+    -- Quantity
+    Dose = regNoun "dose" ;
 
     -- Amount
-    One = {s = "one"} ;
-    Two = {s = "two"} ;
-    Three = {s = "three"} ;
-    Four = {s = "four"} ;
+    One = det Sg "one" ;
+    Two = det Pl "two" ;
+    Three = det Pl "three" ;
+    Four = det Pl "four" ;
 
-    -- Medication
+    -- Medication: based on the 10 most consumed worldwide
     Med1 = {s = "Acetaminophen"} ;
-    Med2 = {s = "Omeprazole"} ;
-    Med3 = {s = "Atorvastatin"} ;
-    Med4 = {s = "Ibuprofen"} ;
-    Med5 = {s = "Aspirin"} ;
+    Med2 = {s = "Aspirin"} ;
+    Med3 = {s = "Ibuprofen"} ;
+    Med4 = {s = "Lisinopril (Prinivil, Zestril)"} ;
+    Med5 = {s = "Atorvastatin (Lipitor)"} ;
+    Med6 = {s = "Levothyroxine (Synthroid)"} ;
+    Med7 = {s = "Metformin (Glucophage)"} ;
+    Med8 = {s = "Amlodipine (Norvasc)"} ;
+    Med9 = {s = "Omeprazole (Prilosec)"} ;
+    Med10 = {s = "Hydrochlorothiazide (Microzide)"} ;
 
     -- Frequency
-    Once = {s = "once"} ;
-    Twice = {s = "twice a day"} ;
-    ThreeTimes = {s = "three times a day"} ;
-    Daily = {s = "daily"} ;
-    EveryMorning = {s = "every morning"} ;
-    EveryEvening = {s = "every evening"} ;
-    AfterBreakfast = {s = "after breakfast"} ;
-    AfterLunch = {s = "after lunch"} ;
-    AfterDinner = {s = "after dinner"} ;
+    Once = { s = "once a day" };
+    Twice = { s = "twice a day" } ;
+    ThreeTimes = { s = "three times a day" } ;
+    FourTimes = { s = "four times a day" } ;
+    EverySixHours = {s = "every six hours"} ;
+    EveryEightHours = {s = "every eight hours"} ;
+
+    -- Time Period
+    Daily = {s = "every day"} ;
+    ForAWeek = {s = "for a week"}} ;
 }
