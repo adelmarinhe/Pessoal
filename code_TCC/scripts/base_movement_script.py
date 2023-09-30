@@ -129,7 +129,7 @@ def save_data(data):
     Save data in a json file
     """
 
-    with open(f"code_TCC/{json_files_path}/{file_name()}", 'w') as output:
+    with open(f"{json_files_path}/{file_name()}", 'w') as output:
         json.dump(data, output)
 
 
@@ -176,7 +176,7 @@ def main():
 
     args = kinova_utilities.parse_connection_arguments()
 
-    time_goal = datetime(2023, 9, 23, 17, 0)
+    time_goal = datetime(2023, 9, 30, 17, 10)
 
     data = create_file(file_name())
 
