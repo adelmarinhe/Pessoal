@@ -1,6 +1,6 @@
-import pgf
+import pgf as gf
 
-gr = gf.readPGF("FoodsRGL.pgf")
+gr = gf.readPGF("Processamento de Linguagem Natural/Hands-on Session 4/FoodsRGL.pgf")
 eng = gr.languages["FoodsEngRGL"]
 name = input("Write a sentence in English: ")
 

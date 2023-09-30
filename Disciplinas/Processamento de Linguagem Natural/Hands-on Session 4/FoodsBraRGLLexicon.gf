@@ -10,8 +10,8 @@ lin Pizza = mkN "pizza" ;
 
 lin Fresh = mkA "fresco" ;
 lin Warm = mkA "morno" "morna" ;
-lin Italian = compoundA (mkA "Italiano" "Italiana") ;
-lin Expensive = compoundA (mkA "caro" "cara") ;
-lin Delicious = compoundA (mkA "delicioso" "deliciosa") ;
-lin Boring = compoundA (mkA "tedioso" "tediosa") ;
+lin Italian = (mkA "Italiano" "Italiana") ;
+lin Expensive = (mkA "caro" "cara") ;
+lin Delicious = (mkA "delicioso" "deliciosa") ;
+lin Boring = (mkA "tedioso" "tediosa") ;
 }
