@@ -10,8 +10,6 @@ csv_path = utils.CSV_FILES_FOLDER
 plots_path = utils.PLOTS_FOLDER
 movements = utils.movements
 
-actuator_attributes_interest = ['position', 'velocity', 'torque', 'currentMotor', 'voltage', 'temperatureMotor', 'temperatureCore']
-
 for directory in os.listdir(csv_path):
     for file in os.listdir(f'{csv_path}/{directory}'):
         with open(f'{csv_path}/{directory}/{file}', 'r') as csv_file:
@@ -20,7 +18,7 @@ for directory in os.listdir(csv_path):
             date = f'{directory}'
             actuator = f'{file}'
 
-            for movement in movements:
+            for movement in list(movements.keys()):
                 filtered_df = dataframe[dataframe['Movement'] == movement]
 
                 # Specify the figsize parameter to set a larger plot size
@@ -34,8 +32,8 @@ for directory in os.listdir(csv_path):
                 ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=30))
                 ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
 
-                ax.set_xlabel('Time')
-                ax.set_ylabel('Value')
+                ax.set_xlabel('Time [30 min intervals]')
+                ax.set_ylabel('Value [degrees]')
                 ax.set_title(f'Time Series Plot of the positional data of {actuator} for {movement} in {date}')
 
                 ax.legend()
