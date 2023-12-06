@@ -57,7 +57,7 @@ for directory in os.listdir(csv_path):
 
             date = f'{directory}'
             actuator = f'{file}'
-            index = int(actuator.split("_")[1])
+            # index = int(actuator.split("_")[1])
 
             for movement in list(movements.keys()):
                 filtered_df = dataframe[dataframe['Movement'] == movement]

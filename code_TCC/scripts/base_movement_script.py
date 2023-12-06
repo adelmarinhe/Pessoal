@@ -51,7 +51,7 @@ def wait_execution(base, event, notification_handle):
 
 def movement_action(base, action_name):
     """
-    Example of a movement action
+    Example of a position action
     """
 
     base_servo_mode = Base_pb2.ServoingModeInformation()
