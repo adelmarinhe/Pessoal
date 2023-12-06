@@ -3,9 +3,11 @@ import csv
 import pandas as pd
 import numpy as np
 
+from code_TCC.scripts.utils import actuator_utils as utils
+
 csv_path = utils.CSV_FILES_FOLDER
 
-movements = utils.movements
+positions = utils.positions
 sequence = utils.sequence
 expected_joint_angles = utils.expected_joint_angles
 

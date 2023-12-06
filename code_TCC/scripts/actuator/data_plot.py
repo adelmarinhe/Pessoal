@@ -4,9 +4,12 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
 
+from code_TCC.scripts.utils import actuator_utils as utils
+
+
 csv_path = utils.CSV_FILES_FOLDER
 plots_path = utils.PLOTS_FOLDER
-movements = utils.movements
+positions = utils.positions
 attribute = 'temperatureMotor'
 
 for directory in os.listdir(csv_path):
