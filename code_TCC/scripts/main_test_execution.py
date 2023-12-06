@@ -1,6 +1,9 @@
 import os
 import json
 from code_TCC.scripts.utils import kinova_utilities
+
+from code_TCC.scripts.utils import actuator_utils as utils
+
 import threading
 from datetime import datetime
 from google.protobuf import json_format

@@ -2,6 +2,8 @@ import os
 import csv
 import json
 
+from code_TCC.scripts.utils import actuator_utils as utils
+
 json_files_path = utils.JSON_FILES_FOLDER_PATH
 csv_files_path = utils.CSV_FILES_FOLDER
 
@@ -19,9 +21,9 @@ actuator_attributes_csv = ['position', 'velocity', 'torque', 'currentMotor', 'vo
 actuator_attributes_csv_write = ['Time', 'Movement', 'position', 'velocity', 'torque', 'currentMotor', 'voltage',
                                  'temperatureMotor', 'temperatureCore']
 
-movements_dict = utils.movements
+positions = utils.positions
 
-inverse_movement = {value: key for key, value in movements_dict.items()}
+inverse_movement = {value: key for key, value in positions.items()}
 
 movements = utils.sequence
 
