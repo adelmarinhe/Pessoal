@@ -1,8 +1,5 @@
-import os
-import csv
 import json
-
-from code_TCC.scripts import utils
+from code_TCC.scripts.utils import actuator_utils as utils
 
 json_files_path = utils.JSON_FILES_FOLDER_PATH
 csv_files_path = utils.CSV_FILES_FOLDER
@@ -57,13 +54,9 @@ with open(f'C:/Users/jams/Documents/Pessoal/code_TCC/json_data_files/2023-09-18.
                        base_data['commandedToolPoseThetaX'], base_data['commandedToolPoseThetaY'],
                        base_data['commandedToolPoseThetaZ']]
 
-
         data.append(data_to_csv)
 
-
     print(data)
-
-
 
     # with open(f'C:/Users/jams/Documents/Pessoal/code_TCC/analyses/poses/{date}.csv', 'w', newline='') as csv_file:
     #     csv_writer = csv.writer(csv_file)

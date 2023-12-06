@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-path_csv = 'C:/Users/jams/Documents/Pessoal/code_TCC/analyses/poses/diff_norm_2/'
-path_save = 'C:/Users/jams/Documents/Pessoal/code_TCC/analyses/poses/boxplots_2/'
+path_csv = '/code_TCC/analyses/poses/diff_norm/'
+path_save = '/code_TCC/analyses/poses/boxplots/'
 
 for j, directory in enumerate(os.listdir(path_csv)):
     data = []

@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
 
-from code_TCC.scripts import utils
-
 csv_path = utils.CSV_FILES_FOLDER
 plots_path = utils.PLOTS_FOLDER
 movements = utils.movements

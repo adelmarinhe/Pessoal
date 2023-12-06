@@ -3,14 +3,14 @@ import os
 
 import pandas as pd
 
-from base_utils import commanded_positions_dict
+from code_TCC.scripts.utils.base_utils import commanded_positions_dict
 
-from code_TCC.scripts.utils import positions
+from code_TCC.scripts.utils.actuator_utils import positions
 
 commanded_positions = commanded_positions_dict
 
 path = f'C:/Users/jams/Documents/Pessoal/code_TCC/csv_data_files/base'
-save_path = 'C:/Users/jams/Documents/Pessoal/code_TCC/analyses/poses/diff_norm_2'
+save_path = '/code_TCC/analyses/poses/diff_norm'
 
 positions = positions
 

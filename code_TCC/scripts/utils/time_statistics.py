@@ -4,11 +4,9 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-from code_TCC.scripts import utils
-
 csv_path = utils.CSV_FILES_FOLDER
 
-movements = utils.movements
+positions = utils.positions
 sequence = utils.sequence
 expected_joint_angles = utils.expected_joint_angles
 
@@ -78,7 +76,7 @@ for directory in os.listdir(csv_path):
 
                 csv_time_statistics.append(time_statistics)
 
-with open(f'C:/Users/jams/Documents/Pessoal/code_TCC/analyses/time_statistics_between_movements.csv', 'w',
+with open(f'/code_TCC/analyses/time_statistics_between_movements.csv', 'w',
           newline='') as csvfile:
     csv_writer = csv.writer(csvfile)
     csv_writer.writerow(indexes)

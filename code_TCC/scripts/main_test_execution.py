@@ -1,12 +1,10 @@
 import os
 import json
-import kinova_utilities
+from code_TCC.scripts.utils import kinova_utilities
 import threading
 from datetime import datetime
 from google.protobuf import json_format
 
-from code_TCC.scripts import utils
-from emergency_stop import EmergencyStop
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient

@@ -3,8 +3,6 @@ import csv
 import pandas as pd
 import numpy as np
 
-from code_TCC.scripts import utils
-
 csv_path = utils.CSV_FILES_FOLDER
 
 movements = utils.movements

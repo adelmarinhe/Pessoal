@@ -2,8 +2,6 @@ import os
 import csv
 import json
 
-from code_TCC.scripts import utils
-
 json_files_path = utils.JSON_FILES_FOLDER_PATH
 csv_files_path = utils.CSV_FILES_FOLDER
 

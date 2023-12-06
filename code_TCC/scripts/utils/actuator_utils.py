@@ -1,4 +1,4 @@
-JSON_FILES_FOLDER_PATH = "C:/Users/jams/Documents/Pessoal/code_TCC/json_data_files"
+JSON_FILES_FOLDER_PATH = "/code_TCC/json_data_files"
 CSV_FILES_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/csv_data_files"
 PLOTS_FOLDER = "C:/Users/jams/Documents/Pessoal/code_TCC/plots"
 

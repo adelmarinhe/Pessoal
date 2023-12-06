@@ -1,4 +1,3 @@
-import csv
 import os
 from datetime import datetime
 
@@ -6,9 +5,9 @@ import matplotlib.pyplot as plt
 
 import pandas as pd
 
-from base_utils import commanded_positions_dict
+from code_TCC.scripts.utils.base_utils import commanded_positions_dict
 
-from code_TCC.scripts.utils import positions
+from code_TCC.scripts.utils.actuator_utils import positions
 
 commanded_positions = commanded_positions_dict
 
@@ -38,15 +37,6 @@ for j, file in enumerate(os.listdir(path)):
 
             time_variation.append(variation.seconds)
 
-    # letter = 'a)'
-    #
-    # if i == 0:
-    #     letter = 'a)'
-    # elif i == 1:
-    #     letter = 'b)'
-    # elif i == 2:
-    #     letter = 'c)'
-
     plt.hist(time_variation, bins=15, edgecolor='black', linewidth=0.8)
     plt.title(f'{indexes[j]} {file.split(".")[0]}')
     plt.xlabel('Time [in seconds]')
@@ -55,8 +45,3 @@ for j, file in enumerate(os.listdir(path)):
     plt.savefig(f'{save_path}/{file.split(".")[0]}.png')
 
     plt.close()
-
-# with open(f'{save_path}/{file.split(".")[0]}.csv', 'w', newline='') as csvfile:
-#     csv_writer = csv.writer(csvfile)
-#     for row in time_variation:
-#         csv_writer.writerow(row)

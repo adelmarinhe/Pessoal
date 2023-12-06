@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
 
-from code_TCC.scripts import utils
+from code_TCC.scripts.utils import actuator_utils as utils
 
 csv_path = utils.CSV_FILES_FOLDER
 plots_path = utils.PLOTS_FOLDER
-movements = utils.movements
+positions = utils.positions
 attribute = 'temperatureMotor'
 
 path = r'C:\Users\jams\Documents\Pessoal\code_TCC\analyses\poses\diff_norm'
